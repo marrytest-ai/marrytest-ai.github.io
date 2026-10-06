@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나도 결혼할 수 있을까?</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR",
+                 "Malgun Gothic", sans-serif;
+    background: #fff5f7;
+    color: #333;
+}
+
+.container {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 18px 50px;
+}
+
+.card {
+    background: white;
+    border-radius: 24px;
+    padding: 30px 22px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+
+h1 {
+    margin: 0 0 15px;
+    font-size: 32px;
+    line-height: 1.35;
+    text-align: center;
+}
+
+h2 {
+    line-height: 1.4;
+}
+
+.subtitle {
+    text-align: center;
+    color: #777;
+    line-height: 1.7;
+    margin-bottom: 28px;
+}
+
+.emoji {
+    font-size: 58px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+button {
+    width: 100%;
+    border: 0;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.start-btn,
+.next-btn {
+    background: #ff6b81;
+    color: white;
+}
+
+.start-btn:hover,
+.next-btn:hover {
+    opacity: 0.9;
+}
+
+.choice {
+    background: #fafafa;
+    border: 2px solid #eee;
+    color: #333;
+    text-align: left;
+    margin: 9px 0;
+    font-weight: normal;
+}
+
+.choice:hover {
+    border-color: #ff9bad;
+    background: #fff7f8;
+}
+
+.choice.selected {
+    border-color: #ff6b81;
+    background: #fff0f3;
+}
+
+.hidden {
+    display: none;
+}
+
+.question-number {
+    color: #ff6b81;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.progress-wrap {
+    width: 100%;
+    height: 10px;
+    background: #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.progress {
+    height: 100%;
+    background: #ff6b81;
+    width: 5%;
+    transition: width 0.3s;
+}
+
+.ad-box {
+    margin: 25px 0;
+    padding: 18px;
+    text-align: center;
+    color: #999;
+    background: #f7f7f7;
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+.result-score {
+    font-size: 42px;
+    font-weight: bold;
+    color: #ff6b81;
+    text-align: center;
+    margin: 15px 0;
+}
+
+.result-type {
+    text-align: center;
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.result-description {
+    background: #fff5f7;
+    padding: 20px;
+    border-radius: 15px;
+    line-height: 1.8;
+}
+
+.keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.keyword {
+    background: #ffe1e7;
+    color: #d94c65;
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.secondary-btn {
+    margin-top: 12px;
+    background: #eee;
+    color: #555;
+}
+
+.small-text {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.6;
+    margin-top: 25px;
+}
+
+.footer {
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+    margin-top: 25px;
+}
+
+@media (max-width: 500px) {
+    h1 {
+        font-size: 27px;
+    }
+
+    .card {
+        padding: 25px 17px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- 시작 화면 -->
+    <section id="startScreen" class="card">
+
+        <div class="emoji">💍</div>
+
+        <h1>나도 결혼할 수 있을까?</h1>
+
+        <p class="subtitle">
+            나는 결혼을 얼마나 준비하고 있을까?<br>
+            20개의 질문으로 나의 결혼 성향을 알아보세요.
+        </p>
+
+        <div class="ad-box">
+            광고 영역
+        </div>
+
+        <button class="start-btn" onclick="startTest()">
+            테스트 시작하기 💕
+        </button>
+
+        <p class="small-text">
+            ※ 본 테스트는 재미와 자기 이해를 위한 콘텐츠이며
+            실제 결혼 가능성을 과학적으로 판단하거나 예측하는 진단이 아닙니다.
+        </p>
+
+    </section>
+
+
+    <!-- 질문 화면 -->
+    <section id="quizScreen" class="card hidden">
+
+        <div class="question-number" id="questionNumber">
+            Q1 / 20
+        </div>
+
+        <div class="progress-wrap">
+            <div class="progress" id="progress"></div>
+        </div>
+
+        <h2 id="questionText"></h2>
+
+        <div id="choices"></div>
+
+        <button class="next-btn" id="nextButton" onclick="nextQuestion()">
+            다음
+        </button>
+
+    </section>
+
+
+    <!-- 결과 화면 -->
+    <section id="resultScreen" class="card hidden">
+
+        <div class="emoji">💐</div>
+
+        <h1>테스트 결과</h1>
+
+        <div class="result-score" id="resultScore"></div>
+
+        <div class="result-type" id="resultType"></div>
+
+        <div class="result-description" id="resultDescription"></div>
+
+        <div class="keywords" id="keywords"></div>
+
+        <div class="ad-box">
+            광고 영역
+        </div>
+
+        <button class="start-btn" onclick="shareResult()">
+            결과 공유하기 📤
+        </button>
+
+        <button class="secondary-btn" onclick="restartTest()">
+            다시 테스트하기
+        </button>
+
+        <p class="small-text">
+            ※ 이 테스트는 재미와 자기 이해를 위한 콘텐츠입니다.
+            실제 결혼 가능성이나 미래를 과학적으로 예측하지 않습니다.
+        </p>
+
+    </section>
+
+    <div class="footer">
+        나도 결혼할 수 있을까? · 재미로 보는 결혼 성향 테스트
+    </div>
+
+</div>
+
+
+<script>
+
+const questions = [
+
+{
+    q: "친구가 결혼한다는 소식을 들었을 때 나는?",
+    choices: [
+        "나도 빨리 결혼하고 싶다.",
+        "부럽고 나도 언젠가는 하고 싶다.",
+        "축하해주지만 크게 생각하지 않는다.",
+        "결혼은 아직 먼 이야기 같다.",
+        "나는 결혼 생각이 별로 없다."
+    ]
+},
+
+{
+    q: "소개팅 제안이 들어온다면?",
+    choices: [
+        "일단 무조건 만나본다.",
+        "상대가 괜찮다면 만나본다.",
+        "조금 고민해보고 결정한다.",
+        "부담스러워서 거절할 것 같다.",
+        "소개팅 자체가 싫다."
+    ]
+},
+
+{
+    q: "마음에 드는 사람에게 단점이 보인다면?",
+    choices: [
+        "단점도 사랑할 수 있다.",
+        "충분히 이해하려고 한다.",
+        "장단점을 비교해본다.",
+        "단점이 계속 신경 쓰인다.",
+        "단점이 보이면 바로 마음이 식는다."
+    ]
+},
+
+{
+    q: "결혼 상대에게 가장 중요하다고 생각하는 것은?",
+    choices: [
+        "신뢰와 인성",
+        "대화와 배려",
+        "경제적인 안정",
+        "외모와 매력",
+        "나와 잘 맞는 취미"
+    ]
+},
+
+{
+    q: "결혼을 생각한다면 경제적인 준비는?",
+    choices: [
+        "충분히 준비되어 있다.",
+        "어느 정도 준비되어 있다.",
+        "앞으로 준비해야 한다.",
+        "경제적으로 아직 불안하다.",
+        "경제적인 준비는 생각하지 않는다."
+    ]
+},
+
+{
+    q: "연인과 크게 싸웠다면?",
+    choices: [
+        "차분하게 대화해서 해결한다.",
+        "시간을 조금 가진 후 이야기한다.",
+        "상대가 먼저 다가오길 기다린다.",
+        "감정적으로 반응하는 편이다.",
+        "그냥 관계를 끝내고 싶어진다."
+    ]
+},
+
+{
+    q: "결혼 후 집안일은 어떻게 해야 한다고 생각하나요?",
+    choices: [
+        "서로 공평하게 나누어야 한다.",
+        "상황에 따라 나누면 된다.",
+        "잘하는 사람이 더 하면 된다.",
+        "한 사람이 주로 맡아도 된다.",
+        "집안일은 별로 중요하지 않다."
+    ]
+},
+
+{
+    q: "결혼 후에도 개인 시간이 필요하다고 생각하나요?",
+    choices: [
+        "당연히 필요하다.",
+        "적당히 필요하다.",
+        "상대와 상의해서 결정한다.",
+        "결혼하면 함께 보내야 한다.",
+        "개인 시간은 중요하지 않다."
+    ]
+},
+
+{
+    q: "배우자가 친구들과 여행을 간다면?",
+    choices: [
+        "즐겁게 다녀오라고 한다.",
+        "조금 아쉽지만 괜찮다.",
+        "어디로 누구와 가는지 궁금하다.",
+        "별로 좋아하지 않는다.",
+        "절대 싫다."
+    ]
+},
+
+{
+    q: "배우자를 고를 때 가장 중요한 것은?",
+    choices: [
+        "성격과 인성",
+        "가치관",
+        "경제력",
+        "외모",
+        "조건"
+    ]
+},
+
+{
+    q: "배우자가 힘든 시기를 보내고 있다면?",
+    choices: [
+        "끝까지 곁에서 돕는다.",
+        "할 수 있는 만큼 도와준다.",
+        "상황을 보고 판단한다.",
+        "나까지 힘들어질까 걱정된다.",
+        "각자 해결해야 한다고 생각한다."
+    ]
+},
+
+{
+    q: "결혼 후 배우자의 생활습관이 마음에 들지 않는다면?",
+    choices: [
+        "대화하면서 함께 바꿔간다.",
+        "부드럽게 이야기한다.",
+        "조금 지켜본다.",
+        "계속 잔소리하게 될 것 같다.",
+        "그런 사람과는 결혼하지 않는다."
+    ]
+},
+
+{
+    q: "배우자의 과거 연애 경험은?",
+    choices: [
+        "과거는 중요하지 않다.",
+        "조금 궁금하지만 괜찮다.",
+        "상황에 따라 중요하다.",
+        "많이 신경 쓰인다.",
+        "과거가 많으면 싫다."
+    ]
+},
+
+{
+    q: "배우자의 돈 쓰는 습관이 나와 다르다면?",
+    choices: [
+        "서로 대화해서 맞춰간다.",
+        "예산을 정해서 관리한다.",
+        "각자 돈을 관리한다.",
+        "상대방의 소비가 걱정된다.",
+        "돈 습관이 다르면 결혼하기 어렵다."
+    ]
+},
+
+{
+    q: "결혼에서 가장 중요하다고 생각하는 것은?",
+    choices: [
+        "서로 믿고 존중하는 것",
+        "대화가 잘 통하는 것",
+        "경제적인 안정",
+        "행복한 생활",
+        "좋은 조건"
+    ]
+},
+
+{
+    q: "결혼식과 결혼생활 중 더 중요하다고 생각하는 것은?",
+    choices: [
+        "결혼생활",
+        "결혼생활이 조금 더 중요하다.",
+        "둘 다 비슷하다.",
+        "결혼식도 중요하다.",
+        "결혼식이 중요하다."
+    ]
+},
+
+{
+    q: "배우자의 말 때문에 상처를 받았다면?",
+    choices: [
+        "솔직하게 이야기한다.",
+        "감정을 정리한 뒤 이야기한다.",
+        "일단 참아본다.",
+        "상대가 알아주길 기다린다.",
+        "그냥 마음을 닫는다."
+    ]
+},
+
+{
+    q: "결혼 후 가족 문제로 갈등이 생긴다면?",
+    choices: [
+        "배우자와 함께 해결한다.",
+        "서로의 입장을 들어본다.",
+        "상황에 따라 판단한다.",
+        "상당히 스트레스 받을 것 같다.",
+        "가족 문제 때문에 결혼이 싫어질 수 있다."
+    ]
+},
+
+{
+    q: "결혼하면 행복해질 것이라고 생각하나요?",
+    choices: [
+        "함께 노력하면 행복할 수 있다.",
+        "대체로 행복할 것 같다.",
+        "사람마다 다르다고 생각한다.",
+        "결혼이 꼭 행복을 보장하지는 않는다.",
+        "결혼과 행복은 별개라고 생각한다."
+    ]
+},
+
+{
+    q: "지금 당장 좋은 결혼 상대가 나타난다면?",
+    choices: [
+        "진지하게 결혼을 생각해본다.",
+        "연애하면서 천천히 생각한다.",
+        "상대를 충분히 알아본다.",
+        "결혼은 아직 부담스럽다.",
+        "결혼할 생각이 없다."
+    ]
+}
+
+];
+
+
+let currentQuestion = 0;
+let answers = [];
+
+
+function startTest() {
+
+    currentQuestion = 0;
+    answers = [];
+
+    document.getElementById("startScreen").classList.add("hidden");
+    document.getElementById("resultScreen").classList.add("hidden");
+    document.getElementById("quizScreen").classList.remove("hidden");
+
+    showQuestion();
+}
+
+
+function showQuestion() {
+
+    const question = questions[currentQuestion];
+
+    document.getElementById("questionNumber").textContent =
+        "Q" + (currentQuestion + 1) + " / " + questions.length;
+
+    document.getElementById("questionText").textContent =
+        question.q;
+
+    document.getElementById("progress").style.width =
+        ((currentQuestion + 1) / questions.length * 100) + "%";
+
+    const choicesDiv = document.getElementById("choices");
+
+    choicesDiv.innerHTML = "";
+
+    question.choices.forEach(function(choice, index) {
+
+        const button = document.createElement("button");
+
+        button.className = "choice";
+
+        button.textContent =
+            "①②③④⑤"[index] + " " + choice;
+
+        button.onclick = function() {
+
+            document.querySelectorAll(".choice").forEach(function(btn) {
+                btn.classList.remove("selected");
+            });
+
+            button.classList.add("selected");
+
+            answers[currentQuestion] = 5 - index;
+        };
+
+        choicesDiv.appendChild(button);
+
+    });
+
+    document.getElementById("nextButton").textContent =
+        currentQuestion === questions.length - 1
+        ? "결과 보기 🎉"
+        : "다음";
+}
+
+
+function nextQuestion() {
+
+    if (answers[currentQuestion] === undefined) {
+        alert("답변을 하나 선택해주세요!");
+        return;
+    }
+
+    if (currentQuestion < questions.length - 1) {
+
+        currentQuestion++;
+
+        showQuestion();
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    } else {
+
+        showResult();
+
+    }
+}
+
+
+function showResult() {
+
+    const score = answers.reduce(function(total, value) {
+        return total + value;
+    }, 0);
+
+    let type;
+    let description;
+    let keywords;
+
+    if (score >= 85) {
+
+        type = "💍 결혼 준비 완료형";
+
+        description =
+            "당신은 결혼에 대해 상당히 현실적이고 긍정적인 생각을 가지고 있어요. " +
+            "상대방과의 신뢰, 대화, 배려를 중요하게 생각하고 " +
+            "함께 문제를 해결하려는 성향이 강합니다. " +
+            "좋은 사람을 만난다면 진지한 관계로 발전할 가능성이 높은 편이에요.";
+
+        keywords = ["신뢰", "배려", "책임감", "현실적"];
+
+    } else if (score >= 70) {
+
+        type = "💕 좋은 배우자 감각형";
+
+        description =
+            "당신은 결혼을 긍정적으로 바라보면서도 무조건적인 결혼보다는 " +
+            "서로 잘 맞는 사람을 찾는 것을 중요하게 생각하는 편이에요. " +
+            "상대방을 배려하면서도 자신의 생각을 적절하게 표현할 수 있는 타입입니다.";
+
+        keywords = ["배려", "소통", "균형", "현실감"];
+
+    } else if (score >= 55) {
+
+        type = "🌿 천천히 준비하는 신중형";
+
+        description =
+            "당신은 결혼을 싫어하는 사람은 아니지만 쉽게 결정하지 않는 편이에요. " +
+            "상대방을 충분히 알아보고 자신의 상황도 확인한 뒤 " +
+            "신중하게 결정하려는 성향이 있습니다. " +
+            "서두르지 않는 것이 오히려 당신에게 잘 맞아요.";
+
+        keywords = ["신중함", "안정", "관찰", "준비"];
+
+    } else if (score >= 40) {
+
+        type = "🔎 조건을 꼼꼼하게 보는형";
+
+        description =
+            "당신은 결혼을 결정할 때 여러 가지 조건을 꼼꼼하게 확인하는 편이에요. " +
+            "감정만으로 결정하기보다는 경제력, 생활습관, 가치관 등을 중요하게 생각합니다. " +
+            "당신에게는 충분한 대화와 현실적인 준비가 특히 중요해요.";
+
+        keywords = ["현실적", "조건", "신중", "안정"];
+
+    } else {
+
+        type = "🌈 아직은 자유가 좋은형";
+
+        description =
+            "현재의 당신은 결혼보다는 자신의 자유와 생활을 더 중요하게 생각하는 편이에요. " +
+            "꼭 결혼해야 한다고 생각하지 않을 수도 있습니다. " +
+            "지금은 자신의 삶을 충분히 즐기면서 좋은 인연이 생겼을 때 " +
+            "천천히 생각해봐도 괜찮아요.";
+
+        keywords = ["자유", "독립", "현재", "여유"];
+
+    }
+
+
+    document.getElementById("quizScreen").classList.add("hidden");
+    document.getElementById("resultScreen").classList.remove("hidden");
+
+    document.getElementById("resultScore").textContent =
+        score + "점";
+
+    document.getElementById("resultType").textContent =
+        type;
+
+    document.getElementById("resultDescription").textContent =
+        description;
+
+    const keywordDiv = document.getElementById("keywords");
+
+    keywordDiv.innerHTML = "";
+
+    keywords.forEach(function(keyword) {
+
+        const span = document.createElement("span");
+
+        span.className = "keyword";
+
+        span.textContent = "#" + keyword;
+
+        keywordDiv.appendChild(span);
+
+    });
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+function restartTest() {
+
+    document.getElementById("resultScreen").classList.add("hidden");
+
+    startTest();
+
+}
+
+
+function shareResult() {
+
+    const score =
+        document.getElementById("resultScore").textContent;
+
+    const type =
+        document.getElementById("resultType").textContent;
+
+    const text =
+        "💍 나도 결혼할 수 있을까?\n\n" +
+        "내 점수: " + score + "\n" +
+        "내 결과: " + type + "\n\n" +
+        "너도 한번 테스트해봐!";
+
+    if (navigator.share) {
+
+        navigator.share({
+            title: "나도 결혼할 수 있을까?",
+            text: text,
+            url: window.location.href
+        });
+
+    } else {
+
+        navigator.clipboard.writeText(
+            text + "\n" + window.location.href
+        );
+
+        alert("결과가 복사되었습니다!");
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
